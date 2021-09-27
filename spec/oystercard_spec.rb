@@ -2,6 +2,7 @@ require 'oystercard'
 
 RSpec.describe Oystercard do
   let(:kings_cross) { double :station, :name => "Kings Cross" }
+  let(:oxford_circus) { double :station, :name => "Oxford Circus" }
 
   it "initialized with balance 0" do
     expect(subject.balance).to eq 0 
@@ -28,7 +29,7 @@ RSpec.describe Oystercard do
   it 'ends journey after touch out' do
     subject.top_up(10)
     subject.touch_in(kings_cross)
-    subject.touch_out
+    subject.touch_out(oxford_circus)
     expect(subject.in_journey?).to eq false
   end
 
@@ -39,7 +40,7 @@ RSpec.describe Oystercard do
   it 'charges the user the minimum fare when touching out' do
     subject.top_up(10)
     subject.touch_in(kings_cross)
-    expect { subject.touch_out }.to change{subject.balance}.by -Oystercard::MIN_FARE
+    expect { subject.touch_out(oxford_circus) }.to change{subject.balance}.by -Oystercard::MIN_FARE
   end
 
   it "saves the touch in station" do
@@ -51,7 +52,18 @@ RSpec.describe Oystercard do
   it "removes the entry station on the touch out" do
     subject.top_up(10)
     subject.touch_in(kings_cross)
-    subject.touch_out
+    subject.touch_out(oxford_circus)
     expect(subject.entry_station).to eq nil
+  end
+
+  it 'has an empty list of journeys by default' do
+    expect(subject.journeys).to eq []
+  end
+
+  it 'stores previous journey after touch out' do
+    subject.top_up(10)
+    subject.touch_in(kings_cross)
+    subject.touch_out(oxford_circus)
+    expect(subject.journeys).to eq [{ entry: kings_cross, exit: oxford_circus }]
   end
 end
