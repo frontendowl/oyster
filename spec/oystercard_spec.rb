@@ -23,13 +23,19 @@ RSpec.describe Oystercard do
   end
 
   it 'starts journey after touch in' do
+    subject.top_up(10)
     subject.touch_in
     expect(subject.in_journey?).to eq true
   end
 
   it 'ends journey after touch out' do
+    subject.top_up(10)
     subject.touch_in
     subject.touch_out
     expect(subject.in_journey?).to eq false
+  end
+
+  it 'raise an error when a card with insufficient balance touches in' do
+    expect { subject.touch_in }.to raise_error "Cannot touch in with insufficient funds"
   end
 end
