@@ -17,4 +17,19 @@ RSpec.describe Oystercard do
     subject.top_up(10)
     expect(subject.deduct(10)).to eq "New balance: 0"
   end
+
+  it 'tracks if user is currently in journey (default false)' do
+    expect(subject.in_journey?).to eq false
+  end
+
+  it 'starts journey after touch in' do
+    subject.touch_in
+    expect(subject.in_journey?).to eq true
+  end
+
+  it 'ends journey after touch out' do
+    subject.touch_in
+    subject.touch_out
+    expect(subject.in_journey?).to eq false
+  end
 end
