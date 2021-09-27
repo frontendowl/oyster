@@ -12,4 +12,9 @@ RSpec.describe Oystercard do
   it "raises an error when trying to exceed maximum limit of 90" do
     expect { subject.top_up(100) }.to raise_error "You couldn't have more than £90 on your card"
   end
+
+  it 'deduct money from the card' do
+    subject.top_up(10)
+    expect(subject.deduct(10)).to eq "New balance: 0"
+  end
 end
