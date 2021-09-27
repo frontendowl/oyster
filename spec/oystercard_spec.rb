@@ -1,6 +1,8 @@
 require 'oystercard'
 
 RSpec.describe Oystercard do
+  let(:kings_cross) { double :station, :name => "Kings Cross" }
+
   it "initialized with balance 0" do
     expect(subject.balance).to eq 0 
   end
@@ -19,24 +21,37 @@ RSpec.describe Oystercard do
 
   it 'starts journey after touch in' do
     subject.top_up(10)
-    subject.touch_in
+    subject.touch_in(kings_cross)
     expect(subject.in_journey?).to eq true
   end
 
   it 'ends journey after touch out' do
     subject.top_up(10)
-    subject.touch_in
+    subject.touch_in(kings_cross)
     subject.touch_out
     expect(subject.in_journey?).to eq false
   end
 
   it 'raise an error when a card with insufficient balance touches in' do
-    expect { subject.touch_in }.to raise_error "Cannot touch in with insufficient funds"
+    expect { subject.touch_in(kings_cross) }.to raise_error "Cannot touch in with insufficient funds"
   end
 
   it 'charges the user the minimum fare when touching out' do
     subject.top_up(10)
-    subject.touch_in
+    subject.touch_in(kings_cross)
     expect { subject.touch_out }.to change{subject.balance}.by -Oystercard::MIN_FARE
+  end
+
+  it "saves the touch in station" do
+    subject.top_up(10)
+    subject.touch_in(kings_cross)
+    expect(subject.entry_station).to eq kings_cross
+  end
+
+  it "removes the entry station on the touch out" do
+    subject.top_up(10)
+    subject.touch_in(kings_cross)
+    subject.touch_out
+    expect(subject.entry_station).to eq nil
   end
 end
