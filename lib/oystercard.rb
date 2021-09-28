@@ -1,3 +1,5 @@
+require_relative "./journey"
+
 class Oystercard
   attr_reader :balance, :entry_station, :journeys
 
@@ -16,18 +18,21 @@ class Oystercard
     "New balance: #{@balance}"
   end
 
+  # TODO: move to Journey
   def in_journey?
     @entry_station != nil
   end
 
   def touch_in(station)
+    start_journey(station) if in_journey?
+
     raise "Cannot touch in with insufficient funds" if @balance < MIN_FARE
+
     @entry_station = station
   end
 
   def touch_out(station)
-    deduct(MIN_FARE)
-    @journeys << { entry: @entry_station, exit: station }
+    end_journey(station)
     @entry_station = nil
   end
 
@@ -36,6 +41,24 @@ class Oystercard
     @balance -= n
     "New balance: #{@balance}"
   end
+
+  public
+  def start_journey(station)
+    journey = Journey.new(station)
+    #deduct(journey.price)
+    @journeys << journey
+  end
+
+  def end_journey(station)
+    if @journeys.empty? || @journeys.last.finished?
+      start_journey(nil)
+    end
+
+    @journeys.last.finish(station)
+    deduct(@journeys.last.price)
+
+  end
+
 end
 
 =begin
@@ -45,5 +68,22 @@ end
 touch out when start station is nil
  -fix by initializing Journey in touch_out
 
- create method to add journey
+ create method to add 
+ 
+
+
+ 1. init
+ 2. top_up
+ 3. deduct (private)
+ 4. touch_in
+ 5. touch_out
+ 6. add_journey
+ 
+ @jouneys = []
+ @balance
+
+ REMOVE:
+
+ 1. in_journey?
+ do we need @entry_station as an instance variable
 =end
