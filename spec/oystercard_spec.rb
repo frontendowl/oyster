@@ -1,9 +1,13 @@
 require 'oystercard'
 
 RSpec.describe Oystercard do
-  let(:kings_cross) { double :station, :name => "Kings Cross" }
-  let(:oxford_circus) { double :station, :name => "Oxford Circus" }
-
+  let(:kings_cross) { double :station, :name => "Kings Cross", :zone => 1 }
+  let(:oxford_circus) { double :station, :name => "Oxford Circus", :zone => 1 }
+  let(:journey) {
+    double :journey,
+    :start_station => kings_cross,
+    :finish_station => oxford_circus
+  }
   it "initialized with balance 0" do
     expect(subject.balance).to eq 0 
   end

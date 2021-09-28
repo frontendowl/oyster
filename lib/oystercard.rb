@@ -22,12 +22,10 @@ class Oystercard
 
   def touch_in(station)
     raise "Cannot touch in with insufficient funds" if @balance < MIN_FARE
-    @in_journey = true
     @entry_station = station
   end
 
   def touch_out(station)
-    @in_journey = false
     deduct(MIN_FARE)
     @journeys << { entry: @entry_station, exit: station }
     @entry_station = nil
@@ -39,3 +37,13 @@ class Oystercard
     "New balance: #{@balance}"
   end
 end
+
+=begin
+2 touch ins without touch out 
+  - fix by checking if in journey in touch in
+
+touch out when start station is nil
+ -fix by initializing Journey in touch_out
+
+ create method to add journey
+=end
